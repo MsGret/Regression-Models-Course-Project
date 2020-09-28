@@ -1,7 +1,7 @@
 ---
 title: "Regression Models Course Project"
 author: "MsGret"
-date: "September 25, 2020"
+date: "September 28, 2020"
 output: pdf_document
 ---
 
@@ -21,7 +21,6 @@ Load the data and perform some basic exploratory data analyses
 library (datasets)
 data(mtcars)
 dim(mtcars)
-str(mtcars)
 ```
 
 Data set consists consists of 11 variables and 32 observation for each variable.
@@ -48,34 +47,36 @@ We can reject null hypothesis that the difference in MPG means for different tra
 
 ## Regression Analysis
 
-So MPG depends on transmission type, but define how other variables affect on MPG. Build multivariable regression model (results in **Appendix B**):
+So MPG depends on transmission type, but define how other variables affect on MPG. Build multivariable regression model:
 
-```{r fullModel,results='hide'}
+```{r fullModel}
 mtcars$cyl <- factor(mtcars$cyl)
 mtcars$vs <- factor(mtcars$vs, labels = c("V", "S"))
 mtcars$gear <- factor(mtcars$gear)
 mtcars$carb <- factor(mtcars$carb)
 
 fullModel <- lm(mpg ~ ., data = mtcars)
-summary(fullModel)
+summary(fullModel)$r.squared
 ```
 
 So none of the coefficients have a p-value less than 0.05 (statistically significant). Find better model (based on removing variables from the model and evaluating the AIC):
 
-```{r,results='hide'}
-AICModel <- step(fullModel, direction = "both")
-summary(AICModel)
-anova(AICModel, fullModel)
+```{r, results='hide'}
+AICModel <- step(fullModel, direction = "both") # hide results
 ```
 
-Comparing the `AICModel` with the `fullModel` we see that removing other predictors has not significantly affected the explanatory ability of the model.
+Comparing the `AICModel` with the `fullModel` we see that removing other predictors has not significantly affected the explanatory ability of the model:
+
+```{r}
+anova(AICModel, fullModel)
+```
 
 The `AICModel` explains about 87% of the variance in MPG (R-squared is 0.8659). The coefficients conclude that increasing the number of cylinders from 4 to 6 with decrease the MPG by 3.031, but from 4 to 8 with decrease the MPG by 2.164. One additional horsepower is decreases MPG by 0.0321. Weight decreases the MPG by 2.497 for each 1000 lbs increase. A Manual transmission improves the MPG by
 1.809.
 
 ## Residual Analysis
 
-Based on residuals plots (**Appendix C**) we can conclude:
+Based on residuals plots (**Appendix B**) we can conclude:
 
 - the `Residuals vs Fitted` plot doesn't show pattern and confirms that residuals are independent;
 - the `Normal Q-Q` plot confirms that the residuals are normally distributed (with some deviate from normality at the tails);
@@ -98,14 +99,6 @@ Based on residuals plots (**Appendix C**) we can conclude:
 ```
 
 ## Appendix B
-
-```{r}
-summary(fullModel)
-summary(AICModel)
-anova(AICModel, fullModel)
-```
-
-## Appendix C
 
 Residuals plots for `AICModel`:
 
